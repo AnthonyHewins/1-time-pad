@@ -1,16 +1,13 @@
-#include <stack>
-#include <string>
 #include <vector>
-#include <iostream>
+#include <array>
 #include <fstream>
 
-using namespace std;
 
 class Crypto {
-protected:
-  char* text_buffer;
-  char* symmetric_encryption(char key[], char file[]);
+public:
+  void one_time_pad(std::vector<char> &text, const std::vector<char> &key);
+  std::vector<char> one_time_pad_copy(const std::vector<char> &text, const std::vector<char> &key);
 private:
-  char* read_file(char file[], int* size);
-  int file_has_errors(ifstream* file);
+  void throw_if_out_of_bounds(const std::vector<char> &text, const std::vector<char> &key);
+  char cast_then_xor(char textchar, char keychar);
 };

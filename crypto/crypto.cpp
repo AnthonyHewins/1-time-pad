@@ -1,43 +1,34 @@
 #include "crypto.h"
 
-char* Crypto::symmetric_encryption(char key[], char file[]) {
-  int size;
-  char* contents = this->read_file(file, &size);
+using namespace std;
 
-  if (size != 0) {
-    for (int i = 0; i < size; i++)
-      cout << (char) ((int)contents[i] | 0);
-    cout << endl;
+void Crypto::one_time_pad(vector<char> &text, const vector<char> &key) {
+  throw_if_out_of_bounds(text, key);
+
+  auto j = key.begin();
+  for (auto i = text.begin(); i != text.end(); ++i) {
+    *i = cast_then_xor(*i, *j);
+    ++j;
   }
 }
 
-char* Crypto::read_file(char file[], int* size) {
-  ifstream io(file, ios::in | ios::binary | ios::ate);
+vector<char> Crypto::one_time_pad_copy(const vector<char> &text, const vector<char> &key) {
+  throw_if_out_of_bounds(text, key);
 
-  if (this->file_has_errors(&io)) {
-    *size = 0;
-    return NULL;
+  vector<char> new_text;
+  for (auto i = text.begin(), j = key.begin(); i != text.end(); ++i) {
+    new_text.push_back( cast_then_xor(*i, *j) );
+    ++j;
   }
 
-  streampos file_size_in_bytes = io.tellg();
-  *size = file_size_in_bytes;
-  char* buffer = new char[file_size_in_bytes];
-  io.seekg(0, ios::beg);
-  io.read(buffer, file_size_in_bytes);
-
-  return buffer;
+  return new_text;
 }
 
-int Crypto::file_has_errors(ifstream* file) {
-  if (file->fail()) {
-    cout << "Unable to open file: does it not exist?" << endl;
-    return 1;
-  }
+void Crypto::throw_if_out_of_bounds(const vector<char>& text, const vector<char>& key) {
+  int end_of_key = key.size(), end_of_text = text.size();
+  if (end_of_text > end_of_key) throw 1;
+}
 
-  if (!file->is_open()) {
-    cout << "Unable to open file: something else may be using it" << endl;
-    return 1;
-  }
-
-  return 0;
+char Crypto::cast_then_xor(char textchar, char keychar) {
+  return (char) (  (int)textchar ^ (int)keychar  );
 }

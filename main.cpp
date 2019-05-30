@@ -1,11 +1,10 @@
 #include <iostream>
-#include "crypto/decrypt.cpp"
-#include "optparse/option_parser.cpp"
+#include "middleware/oracle.cpp"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-  
+  Oracle().one_time_pad(argv[1], argv[2]);
 }
 
 /*
